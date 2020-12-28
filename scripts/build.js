@@ -3,6 +3,7 @@ const MiniCssExtractPlugin = require('react-scripts/node_modules/mini-css-extrac
 process.env.SKIP_PREFLIGHT_CHECK = 'true';
 const defaults = rewire('react-scripts/scripts/build.js');
 const config = defaults.__get__('config');
+//console.dir(config.module.rules, {colors:true, depth: 6});
 
 // Consolidate chunk files instead
 config.optimization.splitChunks = {
