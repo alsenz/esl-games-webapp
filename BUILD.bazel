@@ -18,8 +18,9 @@ _TESTS = [
 nodejs_binary(
     name = "builder",
     entry_point = "scripts/build.js",
-    #data = _RUNTIME_DEPS + ["@npm//@types"],
 )
+
+#TODO this needs to be parameterised by the 3 different apps...
 
 # Remember to keep these up to date 
 APP_BUNDLE = [
@@ -36,6 +37,7 @@ APP_BUNDLE = [
     "build/static/media/logo.6ce24c58.svg"
 ]
 
+#TODO multiples with multiple app roots for different apps
 genrule(
     name = "package",
     srcs = glob(
@@ -47,9 +49,35 @@ genrule(
         exclude = _TESTS,
     ) + [
         "package.json"
-    ],# + _RUNTIME_DEPS + ["@npm//@types", "@npm//rewire"],
+    ],
     outs = APP_BUNDLE,
     tools = ["//:builder"],
     output_to_bindir = True,
-    cmd = "$(location //:builder) && cp -r build $(@D)"# --node_options=--require=./$(execpath chdir.js)"
+    cmd = "$(location //:builder) && cp -r build $(@D)"
+)
+
+filegroup(
+    name = "assets", #TODO parameterise
+    srcs = APP_BUNDLE,
+)
+
+# Now let's make a docker image out of it
+
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+
+pkg_tar(
+    name = "webapp-tar",
+    srcs = APP_BUNDLE,
+    mode = "0o644",
+    package_dir = "/usr/share/nginx/html/",
+    strip_prefix = "build",
+)
+
+container_image(
+    name = "webapp-image",
+    base = "@nginx_base//image",
+    #directory = "/usr/share/nginx/html", #TODO build and then check where these are coming out and hone
+    tars = [":webapp-tar"]
+    #symlinks = {"/usr/share/nginx/html/bundle.js": "/usr/share/nginx/html/store.bundle.js"},
 )
