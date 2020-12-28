@@ -43,66 +43,68 @@ _RUNTIME_DEPS = [
     "@npm//react-dom",
 ]
 
-react_scripts(
-    # Note: this must be named "build" since react-scripts hard-codes that as the output dir
-    name = "build",
-    args = [
-        "--node_options=--require=./$(execpath chdir.js)",
-        "build",
-    ],
-    data = _RUNTIME_DEPS + [
-        "@npm//@types",
-    ],
-    output_dir = True,
-)
+#TODO we now create a nodejs script in build/scripts.js and we see if we can run it
 
-nodejs_test(
-    name = "build_smoke_test",
-    data = ["build"],
-    entry_point = "build_smoke_test.js",
-)
+#react_scripts(
+#    # Note: this must be named "build" since react-scripts hard-codes that as the output dir
+#    name = "build",
+#    args = [
+#        "--node_options=--require=./$(execpath chdir.js)",
+#        "build",
+#    ],
+#    data = _RUNTIME_DEPS + [
+#        "@npm//@types",
+#    ],
+#    output_dir = True,
+#)
 
-copy_to_bin(
-    name = "copy_test_files",
-    srcs = glob(_TESTS),
-)
+#nodejs_test(
+#    name = "build_smoke_test",
+#    data = ["build"],
+#    entry_point = "build_smoke_test.js",
+#)
 
-react_scripts_test(
-    name = "test",
-    args = [
-        "--node_options=--require=$(rootpath chdir.js)",
-        "test",
-        # ibazel is the watch mode for Bazel when running tests
-        # Because Bazel is really a CI system that runs locally
-        "--watchAll=false",
-        "--no-cache",
-        "--no-watchman",
-        "--ci",
-    ],
-    data = _RUNTIME_DEPS + [
-        "copy_test_files",
-        "@npm//@testing-library/dom",
-        "@npm//@testing-library/jest-dom",
-        "@npm//@testing-library/react",
-        "@npm//@testing-library/user-event",
-    ],
-    # Need to set the pwd to avoid jest needing a runfiles helper
-    # Windows users with permissions can use --enable_runfiles
-    # to make this test work
-    tags = ["no-bazelci-windows"],
-)
+#copy_to_bin(
+#    name = "copy_test_files",
+#    srcs = glob(_TESTS),
+#)
 
-react_scripts(
-    name = "start",
-    args = [
-        "--node_options=--require=$(rootpath chdir.js)",
-        "start",
-    ],
-    data = _RUNTIME_DEPS,
-    tags = [
-        # This tag instructs ibazel to pipe into stdin a event describing actions.
-        # ibazel send EOF to stdin by default and `react-scripts start` will stop when getting EOF in stdin.
-        # So use this to prevent EOF.
-        "ibazel_notify_changes",
-    ],
-)
+#react_scripts_test(
+#    name = "test",
+#    args = [
+#        "--node_options=--require=$(rootpath chdir.js)",
+#        "test",
+#        # ibazel is the watch mode for Bazel when running tests
+#        # Because Bazel is really a CI system that runs locally
+#        "--watchAll=false",
+#        "--no-cache",
+#        "--no-watchman",
+#        "--ci",
+#    ],
+#    data = _RUNTIME_DEPS + [
+#        "copy_test_files",
+#        "@npm//@testing-library/dom",
+#        "@npm//@testing-library/jest-dom",
+#        "@npm//@testing-library/react",
+#        "@npm//@testing-library/user-event",
+#    ],
+#    # Need to set the pwd to avoid jest needing a runfiles helper
+#    # Windows users with permissions can use --enable_runfiles
+#    # to make this test work
+#    tags = ["no-bazelci-windows"],
+#)
+
+#react_scripts(
+#    name = "start",
+#    args = [
+#        "--node_options=--require=$(rootpath chdir.js)",
+#        "start",
+#    ],
+#    data = _RUNTIME_DEPS,
+#    tags = [
+#        # This tag instructs ibazel to pipe into stdin a event describing actions.
+#        # ibazel send EOF to stdin by default and `react-scripts start` will stop when getting EOF in stdin.
+#        # So use this to prevent EOF.
+#        "ibazel_notify_changes",
+#    ],
+#)
