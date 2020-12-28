@@ -80,7 +80,6 @@ pkg_tar(
 container_image(
     name = "webapp-image",
     base = "@nginx_base//image",
-    #directory = "/usr/share/nginx/html", #TODO build and then check where these are coming out and hone
-    tars = [":webapp-tar"]
-    #symlinks = {"/usr/share/nginx/html/bundle.js": "/usr/share/nginx/html/store.bundle.js"},
+    tars = [":webapp-tar"],
+    visibility = ["//visibility:public"]
 )
