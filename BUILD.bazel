@@ -53,7 +53,7 @@ genrule(
     outs = APP_BUNDLE,
     tools = ["//:builder"],
     output_to_bindir = True,
-    cmd = "BUILDER_CMD=$$(realpath $(execpath //:builder)); cd $$(dirname $(execpath package.json)); $$BUILDER_CMD; cp -r build $(@D)"
+    cmd = "BUILD_DEST=$$(realpath $(@D)); BUILDER_CMD=$$(realpath $(execpath //:builder)); cd $$(dirname $(execpath package.json)); $$BUILDER_CMD; cp -r build $BUILD_DEST"
 )
 
 filegroup(
