@@ -53,6 +53,7 @@ genrule(
         "tsconfig.json"
     ],
     outs = APP_BUNDLE,
+    tags = ["no-sandbox"],
     tools = ["//:builder"],
     output_to_bindir = True,
     cmd = "BUILD_DEST=$$(realpath $(@D)); BUILDER_CMD=$$(realpath $(execpath //:builder)); cd $$(dirname $(execpath package.json)); $$BUILDER_CMD; cp -r build $$BUILD_DEST"
