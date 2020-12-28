@@ -53,7 +53,8 @@ genrule(
     outs = APP_BUNDLE,
     tools = ["//:builder"],
     output_to_bindir = True,
-    cmd = "$(location //:builder) && cp -r build $(@D)"
+    local = True,
+    cmd = "$(execpath //:builder) && cp -r build $(@D)"
 )
 
 filegroup(

@@ -31,6 +31,8 @@ yarn_install(
     yarn_lock = "//:yarn.lock",
 )
 
+#Docker rules
+
 http_archive(
     name = "io_bazel_rules_docker",
     sha256 = "1698624e878b0607052ae6131aa216d45ebb63871ec497f26c67455b34119c80",
