@@ -1,5 +1,5 @@
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
-load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin", "nodejs_test")
+load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin", "nodejs_test", "nodejs_binary")
 load("@npm//react-scripts:index.bzl", "react_scripts", "react_scripts_test")
 
 # Filename conventions described at
@@ -44,6 +44,13 @@ _RUNTIME_DEPS = [
 ]
 
 #TODO we now create a nodejs script in build/scripts.js and we see if we can run it
+nodejs_binary(
+    name = "builder",
+    #entry_point = "@npm//:node_modules/history-server/modules/cli.js",
+    entry_point = "scripts/build.js",
+    args = ["--node_options=--require=./$(execpath chdir.js)"],
+    data = _RUNTIME_DEPS + ["@npm//@types"],
+)
 
 #react_scripts(
 #    # Note: this must be named "build" since react-scripts hard-codes that as the output dir
