@@ -7,7 +7,7 @@ nodejs_binary(
     entry_point = "scripts/build.js"
 )
 
-APPS = ["lobby", "presentation", "console", "creator", "admin"]
+APPS = ["lobby", "console", "presentation", "creator", "admin"]
 
 # Filename conventions described at
 # https://create-react-app.dev/docs/running-tests#filename-conventions
@@ -38,10 +38,9 @@ APP_BUNDLE = [
 
 
 
-APP_NAME = APPS[0]
+#APP_NAME = APPS[0]
 
-#TODO multiples with multiple app roots for different apps
-genrule(
+[genrule(
     name = "package-" + APP_NAME,
     srcs = glob(
         [
@@ -59,7 +58,7 @@ genrule(
     tools = ["//:builder"],
     output_to_bindir = True,
     cmd = "$(execpath //:builder) $(execpath package.json) $(@D)/build-%s %s" % (APP_NAME, APP_NAME)
-)
+) for APP_NAME in APPS]
 
 
 # Now let's make a docker image out of it
@@ -67,17 +66,17 @@ genrule(
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image")
 
-pkg_tar(
-    name = "matcher-tar",
-    srcs = APP_BUNDLE,
+[pkg_tar(
+    name = "tar-" + APP_NAME,
+    srcs = ["build-%s/" % APP_NAME + x for x in APP_BUNDLE],
     mode = "0o644",
     package_dir = "/usr/share/nginx/html/",
-    strip_prefix = "build",
-)
+    strip_prefix = "buildi-%s" % APP_NAME,
+) for APP_NAME in APPS]
 
-container_image(
-    name = "matcher-image",
+[container_image(
+    name = "%s-image" % APP_NAME,
     base = "@nginx_base//image",
-    tars = [":matcher-tar"],
+    tars = [":tar-%s" % APP_NAME],
     visibility = ["//visibility:public"]
-)
+) for APP_NAME in APPS]

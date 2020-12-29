@@ -16,8 +16,6 @@ process.chdir(packageJsonDir);
 
 const rewire = require('rewire');
 const MiniCssExtractPlugin = require('react-scripts/node_modules/mini-css-extract-plugin');
-//TODO remove these
-//const ESLintWebpackPlugin = require('react-scripts/node_modules/eslint-webpack-plugin');
 const webpack = require('react-scripts/node_modules/webpack');
 process.env.SKIP_PREFLIGHT_CHECK = 'true';
 console.log("BEFORE");

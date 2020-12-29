@@ -1,13 +1,13 @@
 import logo from './logo.svg';
-import './LobbyApp.css';
+import './AdminApp.css';
 
-function LobbyApp() {
+function AdminApp() {
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          This is the Lobby App
+          This is the Admin App
         </p>
         <a
           className="App-link"
@@ -22,4 +22,4 @@ function LobbyApp() {
   );
 }
 
-export default LobbyApp;
+export default AdminApp;
