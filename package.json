@@ -42,6 +42,7 @@
     "@babel/preset-react": "^7.12.10",
     "babel-loader": "^8.2.2",
     "fs-extra": "^9.0.1",
+    "reveal.js": "^4.1.0",
     "rewire": "^5.0.0",
     "sass": "^1.30.0",
     "style-loader": "^2.0.0",
