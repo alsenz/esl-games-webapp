@@ -1,11 +1,4 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+/* global APP_NAME:readonly, APP_NAME_JS:readonly */
+console.log("App name: ", APP_NAME);
+//require("./" + APP_NAME + ".js");
+require(APP_NAME_JS);

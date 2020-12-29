@@ -2,6 +2,13 @@ load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin", "nodejs_test", "nodejs_binary", "npm_package_bin")
 load("@npm//react-scripts:index.bzl", "react_scripts", "react_scripts_test")
 
+nodejs_binary(
+    name = "builder",
+    entry_point = "scripts/build.js"
+)
+
+APPS = ["lobby", "presentation", "console", "creator", "admin"]
+
 # Filename conventions described at
 # https://create-react-app.dev/docs/running-tests#filename-conventions
 _TESTS = [
@@ -14,33 +21,28 @@ _TESTS = [
     "_tmp/**"
 ]
 
-
-nodejs_binary(
-    name = "builder",
-    entry_point = "scripts/build.js",
-    #templated_args = ["--nobazel_node_patches"]
-)
-
-#TODO this needs to be parameterised by the 3 different apps...
-
 # Remember to keep these up to date 
 APP_BUNDLE = [
-    "build/asset-manifest.json",
-    "build/favicon.ico",
-    "build/index.html",
-    "build/logo192.png",
-    "build/logo512.png",
-    "build/manifest.json",
-    "build/robots.txt",
-    "build/static/js/main.js",
-    "build/static/js/main.js.LICENSE.txt",
-    "build/static/js/main.js.map",
-    "build/static/media/logo.6ce24c58.svg"
+    "asset-manifest.json",
+    "favicon.ico",
+    "index.html",
+    "logo192.png",
+    "logo512.png",
+    "manifest.json",
+    "robots.txt",
+    "static/js/main.js",
+    "static/js/main.js.LICENSE.txt",
+    "static/js/main.js.map",
+    "static/media/logo.6ce24c58.svg"
 ]
+
+
+
+APP_NAME = APPS[0]
 
 #TODO multiples with multiple app roots for different apps
 genrule(
-    name = "package",
+    name = "package-" + APP_NAME,
     srcs = glob(
         [
             "public/*",
@@ -50,19 +52,15 @@ genrule(
         exclude = _TESTS,
     ) + [
         "package.json",
-        "tsconfig.json"
+        "tsconfig.json",
     ],
-    outs = APP_BUNDLE,
-    tags = ["no-sandbox"],
+    outs = ["build-%s/" % APP_NAME + x for x in APP_BUNDLE],
+    tags = ["no-sandbox"], # Needed due to node-patches.js changing files -- but we're linking too superficially...
     tools = ["//:builder"],
     output_to_bindir = True,
-    cmd = "BUILD_DEST=$$(realpath $(@D)); BUILDER_CMD=$$(realpath $(execpath //:builder)); cd $$(dirname $(execpath package.json)); $$BUILDER_CMD; cp -r build $$BUILD_DEST"
+    cmd = "$(execpath //:builder) $(execpath package.json) $(@D)/build-%s %s" % (APP_NAME, APP_NAME)
 )
 
-filegroup(
-    name = "assets", #TODO parameterise
-    srcs = APP_BUNDLE,
-)
 
 # Now let's make a docker image out of it
 
@@ -70,7 +68,7 @@ load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image")
 
 pkg_tar(
-    name = "webapp-tar",
+    name = "matcher-tar",
     srcs = APP_BUNDLE,
     mode = "0o644",
     package_dir = "/usr/share/nginx/html/",
@@ -78,8 +76,8 @@ pkg_tar(
 )
 
 container_image(
-    name = "webapp-image",
+    name = "matcher-image",
     base = "@nginx_base//image",
-    tars = [":webapp-tar"],
+    tars = [":matcher-tar"],
     visibility = ["//visibility:public"]
 )
