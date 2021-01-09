@@ -21,7 +21,9 @@ _TESTS = [
     "_tmp/**"
 ]
 
-# Remember to keep these up to date 
+# Remember to keep these up to date
+# TODO: we will actually need specific app bundles - e.g. if presentation app is not including the logo right now
+# TODO TODO fix this up
 APP_BUNDLE = [
     "asset-manifest.json",
     "favicon.ico",
@@ -33,12 +35,9 @@ APP_BUNDLE = [
     "static/js/main.js",
     "static/js/main.js.LICENSE.txt",
     "static/js/main.js.map",
-    "static/media/logo.6ce24c58.svg"
+#    "static/media/logo.6ce24c58.svg"
 ]
 
-
-
-#APP_NAME = APPS[0]
 
 [genrule(
     name = "package-" + APP_NAME,
